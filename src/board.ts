@@ -322,11 +322,12 @@ export function stop(state: HeadlessState): void {
 }
 
 export function getKeyAtDomPos(pos: cg.NumberPair, asWhite: boolean, bounds: ClientRect): cg.Key | undefined {
-  let file = Math.floor((8 * (pos[0] - bounds.left)) / bounds.width);
-  if (!asWhite) file = 7 - file;
-  let rank = 7 - Math.floor((8 * (pos[1] - bounds.top)) / bounds.height);
-  if (!asWhite) rank = 7 - rank;
-  return file >= 0 && file < 8 && rank >= 0 && rank < 8 ? pos2key([file, rank]) : undefined;
+    const bd = cg.dimensions[0];
+    let file = Math.ceil(bd.width * ((pos[0] - bounds.left) / bounds.width));
+    if (!asWhite) file = bd.width + 1 - file;
+    let rank = Math.ceil(bd.height - (bd.height * ((pos[1] - bounds.top) / bounds.height)));
+    if (!asWhite) rank = bd.height + 1 - rank;
+    return (file > 0 && file < bd.width + 1 && rank > 0 && rank < bd.height + 1) ? pos2key([file, rank]) : undefined;
 }
 
 export function getSnappedKeyAtDomPos(

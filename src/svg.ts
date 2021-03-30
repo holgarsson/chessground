@@ -222,18 +222,19 @@ function renderCustomSvg(customSvg: string, pos: cg.Pos, bounds: ClientRect): SV
 }
 
 function renderCircle(brush: DrawBrush, pos: cg.Pos, current: boolean, bounds: ClientRect): SVGElement {
-  const o = pos2px(pos, bounds),
-    widths = circleWidth(bounds),
-    radius = (bounds.width + bounds.height) / 32;
-  return setAttributes(createElement('circle'), {
-    stroke: brush.color,
-    'stroke-width': widths[current ? 0 : 1],
-    fill: 'none',
-    opacity: opacity(brush, current),
-    cx: o[0],
-    cy: o[1],
-    r: radius - widths[1] / 2,
-  });
+    const bd = cg.dimensions[0];
+    const o = pos2px(pos, bounds, bd),
+        widths = circleWidth(bounds, bd),
+        radius = (bounds.width / bd.width) / 2;
+    return setAttributes(createElement('circle'), {
+        stroke: brush.color,
+        'stroke-width': widths[current ? 0 : 1],
+        fill: 'none',
+        opacity: opacity(brush, current),
+        cx: o[0],
+        cy: o[1],
+        r: radius - widths[1] / 2
+    });
 }
 
 function renderArrow(
@@ -244,39 +245,45 @@ function renderArrow(
   shorten: boolean,
   bounds: ClientRect
 ): SVGElement {
-  const m = arrowMargin(bounds, shorten && !current),
-    a = pos2px(orig, bounds),
-    b = pos2px(dest, bounds),
-    dx = b[0] - a[0],
-    dy = b[1] - a[1],
-    angle = Math.atan2(dy, dx),
-    xo = Math.cos(angle) * m,
-    yo = Math.sin(angle) * m;
-  return setAttributes(createElement('line'), {
-    stroke: brush.color,
-    'stroke-width': lineWidth(brush, current, bounds),
-    'stroke-linecap': 'round',
-    'marker-end': 'url(#arrowhead-' + brush.key + ')',
-    opacity: opacity(brush, current),
-    x1: a[0],
-    y1: a[1],
-    x2: b[0] - xo,
-    y2: b[1] - yo,
-  });
+    const bd = cg.dimensions[0];
+    const m = arrowMargin(bounds, shorten && !current, bd),
+        a = pos2px(orig, bounds, bd),
+        b = pos2px(dest, bounds, bd),
+        dx = b[0] - a[0],
+        dy = b[1] - a[1],
+        angle = Math.atan2(dy, dx),
+        xo = Math.cos(angle) * m,
+        yo = Math.sin(angle) * m;
+    return setAttributes(createElement('line'), {
+        stroke: brush.color,
+        'stroke-width': lineWidth(brush, current, bounds, bd),
+        'stroke-linecap': 'round',
+        'marker-end': 'url(#arrowhead-' + brush.key + ')',
+        opacity: opacity(brush, current),
+        x1: a[0],
+        y1: a[1],
+        x2: b[0] - xo,
+        y2: b[1] - yo
+    });
 }
 
 function renderPiece(baseUrl: string, pos: cg.Pos, piece: DrawShapePiece, bounds: ClientRect): SVGElement {
-  const o = pos2px(pos, bounds),
-    size = (bounds.width / 8) * (piece.scale || 1),
-    name = piece.color[0] + (piece.role === 'knight' ? 'n' : piece.role[0]).toUpperCase();
-  return setAttributes(createElement('image'), {
-    className: `${piece.role} ${piece.color}`,
-    x: o[0] - size / 2,
-    y: o[1] - size / 2,
-    width: size,
-    height: size,
-    href: baseUrl + name + '.svg',
-  });
+    const bd = cg.dimensions[0];
+    const o = pos2px(pos, bounds, bd),
+        width = bounds.width / bd.width * (piece.scale || 1),
+        height = bounds.height / bd.height * (piece.scale || 1),
+        name = piece.color[0] + piece.role[0].toUpperCase();
+    // If baseUrl doesn't ends with '/' use it as full href
+    // This is needed when drop piece suggestion .svg image file names are different than "name" produces
+    const href = (baseUrl.endsWith('/') ? baseUrl + name + '.svg' : baseUrl);
+    return setAttributes(createElement('image'), {
+        className: `${piece.role} ${piece.color}`,
+        x: o[0] - width / 2,
+        y: o[1] - height / 2,
+        width: width,
+        height: height,
+        href: href
+    });
 }
 
 function renderMarker(brush: DrawBrush): SVGElement {
@@ -316,23 +323,23 @@ function makeCustomBrush(base: DrawBrush, modifiers: DrawModifiers): DrawBrush {
   };
 }
 
-function circleWidth(bounds: ClientRect): [number, number] {
-  const base = bounds.width / 512;
-  return [3 * base, 4 * base];
+function circleWidth(bounds: ClientRect, bd: cg.BoardDimensions): [number, number] {
+    const base = bounds.width / (bd.width * 64);
+    return [3 * base, 4 * base];
 }
 
-function lineWidth(brush: DrawBrush, current: boolean, bounds: ClientRect): number {
-  return (((brush.lineWidth || 10) * (current ? 0.85 : 1)) / 512) * bounds.width;
+function lineWidth(brush: DrawBrush, current: boolean, bounds: ClientRect, bd: cg.BoardDimensions): number {
+    return (brush.lineWidth || 10) * (current ? 0.85 : 1) / (bd.width * 64) * bounds.width;
 }
 
 function opacity(brush: DrawBrush, current: boolean): number {
   return (brush.opacity || 1) * (current ? 0.9 : 1);
 }
 
-function arrowMargin(bounds: ClientRect, shorten: boolean): number {
-  return ((shorten ? 20 : 10) / 512) * bounds.width;
+function arrowMargin(bounds: ClientRect, shorten: boolean, bd: cg.BoardDimensions): number {
+    return (shorten ? 20 : 10) / (bd.width * 64) * bounds.width;
 }
 
-function pos2px(pos: cg.Pos, bounds: ClientRect): cg.NumberPair {
-  return [((pos[0] + 0.5) * bounds.width) / 8, ((7.5 - pos[1]) * bounds.height) / 8];
+function pos2px(pos: cg.Pos, bounds: ClientRect, bd: cg.BoardDimensions): cg.NumberPair {
+    return [(pos[0] - 0.5) * bounds.width / bd.width, (bd.height + 0.5 - pos[1]) * bounds.height / bd.height];
 }
