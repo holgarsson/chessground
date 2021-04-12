@@ -9,6 +9,17 @@ _Chessground_ is a free/libre open source chess UI developed for
 [lichess.org](https://lichess.org).
 It targets modern browsers, as well as mobile development using Cordova.
 
+## Modified version to support arbitrary board dimension size
+All credits to [xchessground](https://github.com/gbtami/chessgroundx) for implementing most of the logic.
+
+```js
+const Chessground = require('chessground').Chessground;
+
+const config = {};
+config.dimensions = { width: 20, height: 10 }; // E.g. for 20x10 board
+const ground = Chessground(document.body, config);
+```
+
 ## License
 
 Chessground is distributed under the **GPL-3.0 license** (or any later version,
