@@ -1,6 +1,6 @@
 import { HeadlessState } from './state';
 import { setVisible, createEl } from './util';
-import { colors, files, ranks } from './types';
+import { colors, files, ranks, chessgroundToPkConversionMap, useChessgroundToPkConversion } from './types';
 import { createElement as createSVG, setAttributes } from './svg';
 import { Elements } from './types';
 
@@ -71,12 +71,30 @@ export function renderWrap(element: HTMLElement, s: HeadlessState, relative: boo
   };
 }
 
+function allReplace(inputStr: string, map: any, reverse: boolean): string {
+    let result = inputStr;
+    let charArray: string[] = [...inputStr];
+    for (let i = 0; i < charArray.length; i++) {
+        if (reverse) {
+            result = result.replace(new RegExp(map[charArray[i]], 'g'), charArray[i]);
+        } else {
+            let escaped = charArray[i].replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+            result = result.replace(new RegExp(escaped, 'g'), map[escaped]);
+        }
+    }
+    return result;
+}
+
 function renderCoords(elems: readonly string[], className: string): HTMLElement {
   const el = createEl('coords', className);
   let f: HTMLElement;
   for (const elem of elems) {
     f = createEl('coord');
-    f.textContent = elem;
+    if (useChessgroundToPkConversion)
+        f.textContent = allReplace(elem, chessgroundToPkConversionMap, false).toUpperCase();
+    else
+        f.textContent = elem;
+
     el.appendChild(f);
   }
   return el;
