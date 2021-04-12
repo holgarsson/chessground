@@ -18,7 +18,7 @@ export function pos2key(pos: cg.Pos) {
     return (cg.files[pos[0] - 1] + cg.ranks[pos[1] - 1]) as cg.Key;
 }
 
-export const key2pos = (k: cg.Key): cg.Pos => [k.charCodeAt(0) - 96, k.charCodeAt(1) - 48];
+export const key2pos = (k: cg.Key): cg.Pos => [k.charCodeAt(0) - 79, k.charCodeAt(1) - 38];
 
 export const allPos: readonly cg.Pos[] = allKeys({height: 8, width: 8}).map(key2pos);
 
