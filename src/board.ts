@@ -95,7 +95,7 @@ function tryAutoCastle(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolea
 
 export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piece | boolean {
   const origPiece = state.pieces.get(orig),
-    destPiece = state.pieces.get(dest);
+        destPiece = state.pieces.get(dest);
   if (orig === dest || !origPiece) return false;
   const captured = destPiece && destPiece.color !== origPiece.color ? destPiece : undefined;
   if (dest === state.selected) unselect(state);
@@ -321,8 +321,7 @@ export function stop(state: HeadlessState): void {
   cancelMove(state);
 }
 
-export function getKeyAtDomPos(pos: cg.NumberPair, asWhite: boolean, bounds: ClientRect): cg.Key | undefined {
-    const bd = cg.dimensions[0];
+export function getKeyAtDomPos(pos: cg.NumberPair, asWhite: boolean, bounds: ClientRect, bd: cg.BoardDimensions): cg.Key | undefined {
     let file = Math.ceil(bd.width * ((pos[0] - bounds.left) / bounds.width));
     if (!asWhite) file = bd.width + 1 - file;
     let rank = Math.ceil(bd.height - (bd.height * ((pos[1] - bounds.top) / bounds.height)));

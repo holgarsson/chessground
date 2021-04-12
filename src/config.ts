@@ -86,7 +86,8 @@ export interface Config {
       baseUrl?: string;
     };
     onChange?: (shapes: DrawShape[]) => void; // called after drawable shapes change
-  };
+    };
+  dimensions?: cg.BoardDimensions;
 }
 
 export function configure(state: HeadlessState, config: Config): void {
@@ -94,6 +95,8 @@ export function configure(state: HeadlessState, config: Config): void {
   if (config.movable?.dests) state.movable.dests = undefined;
 
   merge(state, config);
+
+  if (config.dimensions) state.dimensions = config.dimensions;
 
   // if a fen was provided, replace the pieces
   if (config.fen) {

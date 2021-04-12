@@ -99,7 +99,7 @@ export type KHz = number;
 
 export const colors = ['white', 'black'] as const;
 export const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'] as const;
-export const ranks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] as const;
+export const ranks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ':'] as const;
 export const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] as const;
 
 export interface BoardDimensions {
@@ -107,6 +107,6 @@ export interface BoardDimensions {
     height: number;
 }
 
-export const enum Geometry { dim20x10 };
+//export const enum Geometry { dim20x10 };
 
-export const dimensions: BoardDimensions[] = [{ width: 20, height: 10 }];
+//export const dimensions: BoardDimensions[] = [{ width: 20, height: 10 }];

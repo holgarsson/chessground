@@ -96,6 +96,7 @@ export interface HeadlessState {
   drawable: Drawable;
   exploding?: cg.Exploding;
   hold: cg.Timer;
+  dimensions: cg.BoardDimensions;
 }
 
 export interface State extends HeadlessState {
@@ -185,6 +186,7 @@ export function defaults(): HeadlessState {
       },
       prevSvgHash: '',
     },
-    hold: timer(),
+      hold: timer(),
+      dimensions: { width: 8, height: 8 }
   };
 }

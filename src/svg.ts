@@ -170,7 +170,7 @@ function renderShape(
   { shape, current, hash }: Shape,
   brushes: DrawBrushes,
   arrowDests: ArrowDests,
-  bounds: ClientRect
+  bounds: ClientRect,
 ): SVGElement {
   let el: SVGElement;
   if (shape.customSvg) {
@@ -182,7 +182,8 @@ function renderShape(
       state.drawable.pieces.baseUrl,
       orient(key2pos(shape.orig), state.orientation),
       shape.piece,
-      bounds
+        bounds,
+      state.dimensions
     );
   else {
     const orig = orient(key2pos(shape.orig), state.orientation);
@@ -195,9 +196,10 @@ function renderShape(
         orient(key2pos(shape.dest), state.orientation),
         current,
         (arrowDests.get(shape.dest) || 0) > 1,
-        bounds
+          bounds,
+        state.dimensions
       );
-    } else el = renderCircle(brushes[shape.brush!], orig, current, bounds);
+    } else el = renderCircle(brushes[shape.brush!], orig, current, bounds, state.dimensions);
   }
   el.setAttribute('cgHash', hash);
   return el;
@@ -221,8 +223,7 @@ function renderCustomSvg(customSvg: string, pos: cg.Pos, bounds: ClientRect): SV
   return g;
 }
 
-function renderCircle(brush: DrawBrush, pos: cg.Pos, current: boolean, bounds: ClientRect): SVGElement {
-    const bd = cg.dimensions[0];
+function renderCircle(brush: DrawBrush, pos: cg.Pos, current: boolean, bounds: ClientRect, bd: cg.BoardDimensions): SVGElement {
     const o = pos2px(pos, bounds, bd),
         widths = circleWidth(bounds, bd),
         radius = (bounds.width / bd.width) / 2;
@@ -243,9 +244,9 @@ function renderArrow(
   dest: cg.Pos,
   current: boolean,
   shorten: boolean,
-  bounds: ClientRect
+  bounds: ClientRect,
+  bd: cg.BoardDimensions
 ): SVGElement {
-    const bd = cg.dimensions[0];
     const m = arrowMargin(bounds, shorten && !current, bd),
         a = pos2px(orig, bounds, bd),
         b = pos2px(dest, bounds, bd),
@@ -267,8 +268,7 @@ function renderArrow(
     });
 }
 
-function renderPiece(baseUrl: string, pos: cg.Pos, piece: DrawShapePiece, bounds: ClientRect): SVGElement {
-    const bd = cg.dimensions[0];
+function renderPiece(baseUrl: string, pos: cg.Pos, piece: DrawShapePiece, bounds: ClientRect, bd: cg.BoardDimensions): SVGElement {
     const o = pos2px(pos, bounds, bd),
         width = bounds.width / bd.width * (piece.scale || 1),
         height = bounds.height / bd.height * (piece.scale || 1),
