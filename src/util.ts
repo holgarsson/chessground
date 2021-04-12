@@ -2,9 +2,6 @@ import * as cg from './types';
 
 export const invRanks: readonly cg.Rank[] = [...cg.ranks].reverse();
 
-export const NRanks: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-export const invNRanks: number[] = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
-
 function files(n: number) {
     return cg.files.slice(0, n);
 }
@@ -104,14 +101,14 @@ export const createEl = (tagName: string, className?: string): HTMLElement => {
     return el;
 };
 
-export function computeSquareCenter(key: cg.Key, asWhite: boolean, bounds: ClientRect): cg.NumberPair {
+export function computeSquareCenter(key: cg.Key, asWhite: boolean, bounds: ClientRect, bd: cg.BoardDimensions): cg.NumberPair {
     const pos = key2pos(key);
     if (!asWhite) {
-        pos[0] = 7 - pos[0];
-        pos[1] = 7 - pos[1];
+        pos[0] = (bd.width - 1) - pos[0];
+        pos[1] = (bd.height) - pos[1];
     }
     return [
-        bounds.left + (bounds.width * pos[0]) / 8 + bounds.width / 16,
-        bounds.top + (bounds.height * (7 - pos[1])) / 8 + bounds.height / 16,
+        bounds.left + (bounds.width * pos[0]) / bd.width + bounds.width / (bd.width*2),
+        bounds.top + (bounds.height * ((bd.height - 1) - pos[1])) / bd.height + bounds.height / (bd.height*2),
     ];
 }

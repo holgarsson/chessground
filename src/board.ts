@@ -333,13 +333,14 @@ export function getSnappedKeyAtDomPos(
   orig: cg.Key,
   pos: cg.NumberPair,
   asWhite: boolean,
-  bounds: ClientRect
+  bounds: ClientRect,
+  bd: cg.BoardDimensions
 ): cg.Key | undefined {
   const origPos = key2pos(orig);
   const validSnapPos = allPos.filter(pos2 => {
     return queen(origPos[0], origPos[1], pos2[0], pos2[1]) || knight(origPos[0], origPos[1], pos2[0], pos2[1]);
   });
-  const validSnapCenters = validSnapPos.map(pos2 => computeSquareCenter(pos2key(pos2), asWhite, bounds));
+  const validSnapCenters = validSnapPos.map(pos2 => computeSquareCenter(pos2key(pos2), asWhite, bounds, bd));
   const validSnapDistances = validSnapCenters.map(pos2 => distanceSq(pos, pos2));
   const [, closestSnapIndex] = validSnapDistances.reduce((a, b, index) => (a[0] < b ? a : [b, index]), [
     validSnapDistances[0],
